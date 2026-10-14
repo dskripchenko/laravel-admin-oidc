@@ -22,8 +22,9 @@ differences between providers are settings.
   private networks refused unless whitelisted).
 - Optional **MFA requirement** from the provider's `amr` claim.
 
+[![CI](https://github.com/dskripchenko/laravel-admin-oidc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/dskripchenko/laravel-admin-oidc/actions/workflows/ci.yml)
 [![Packagist](https://img.shields.io/packagist/v/dskripchenko/laravel-admin-oidc)](https://packagist.org/packages/dskripchenko/laravel-admin-oidc)
-[![License](https://img.shields.io/packagist/l/dskripchenko/laravel-admin-oidc)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Install
 
@@ -46,6 +47,11 @@ php artisan vendor:publish --tag=admin-oidc-config
 - [Tenants and contracts](docs/en/tenants.md) — per-tenant providers, custom user provisioning and role catalogs
 - [Security](docs/en/security.md) — what is checked, the network policy, MFA
 
+## Security
+
+Report vulnerabilities privately — see [SECURITY.md](SECURITY.md).
+
 ## License
 
-MIT.
+MIT — see [LICENSE](LICENSE). The ID tokens are verified with
+[`firebase/php-jwt`](https://github.com/firebase/php-jwt) (BSD-3-Clause).

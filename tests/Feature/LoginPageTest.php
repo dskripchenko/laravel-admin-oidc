@@ -26,7 +26,7 @@ final class LoginPageTest extends TestCase
         $this->assertSame([[
             'label' => 'Sign in with Keycloak',
             'url' => url('admin/sso/redirect/'.$on->id),
-            'icon' => 'key-round',
+            'icon' => 'key',
             'description' => null,
         ]], $logins);
     }

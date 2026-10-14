@@ -97,7 +97,7 @@ final class AdminOidcPlugin implements AdminPlugin
                 static fn (OidcProvider $provider): ExternalLogin => new ExternalLogin(
                     __('Войти через :name', ['name' => $provider->name]),
                     route($panel->id.'.oidc.redirect', ['provider' => $provider->id]),
-                    'key-round',
+                    'key',
                 ),
                 app(ProviderResolver::class)->offered($request, $panel->id, $hint),
             );

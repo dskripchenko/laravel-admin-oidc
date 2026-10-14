@@ -33,7 +33,7 @@ class OidcProviderResource extends Resource
 {
     public static string $model = OidcProvider::class;
 
-    public static string $icon = 'key-round';
+    public static string $icon = 'key';
 
     public static ?string $group = 'Система';
 
