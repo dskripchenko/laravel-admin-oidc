@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- The audit row of an SSO sign-in no longer keeps the callback's
+  authorization code and state: it takes the request context from the
+  core's `AuditLog::requestContext()`, which masks them. Requires
+  laravel-admin 1.50.1, where the audit columns hold long URLs — on
+  PostgreSQL the callback URL used to fail the core's own audit insert.
+
 ## [0.1.0] — 2026-10-14
 
 ### Added
