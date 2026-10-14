@@ -25,7 +25,7 @@
     },
     "require": {
         "php": "^8.2",
-        "dskripchenko/laravel-admin": "^1.50",
+        "dskripchenko/laravel-admin": "^1.50.1",
         "firebase/php-jwt": "^7.0"
     },
     "require-dev": {

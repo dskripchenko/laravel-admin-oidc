@@ -168,9 +168,9 @@ final class Authenticator
                 'subject_id' => $user->getKey(),
                 'event' => $event,
                 'changes' => ['payload' => $payload],
-                'ip' => request()->ip(),
-                'user_agent' => substr((string) request()->userAgent(), 0, 1024),
-                'url' => substr((string) request()->fullUrl(), 0, 2048),
+                // The core's context: lengths cut as configured, and the
+                // callback's code and state masked — the audit log outlives them.
+                ...AuditLog::requestContext(),
             ]);
         } catch (\Throwable $e) {
             // A missing audit table must not stop a sign-in.
