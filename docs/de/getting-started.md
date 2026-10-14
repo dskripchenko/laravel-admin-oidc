@@ -39,6 +39,7 @@ Welche Panels bedient werden, steht in `admin-oidc.panels` (Standard
 | Rollenzuordnung | Claim-Wert → Panel-Rolle. Für die Anmeldung braucht es mindestens einen Treffer. |
 | MFA verlangen | Ablehnen, wenn der Claim `amr` keinen zweiten Faktor nennt. |
 | Per E-Mail verknüpfen | Eine erste Anmeldung darf ein Konto mit derselben, vom Anbieter bestätigten E-Mail übernehmen. |
+| Auch beim Anbieter abmelden | Die Abmeldung vom Panel beendet auch die Sitzung beim Anbieter (RP-initiated Logout), wenn der Anbieter einen `end_session_endpoint` angibt. Standardmäßig an. |
 
 **Prüfen** in der Zeile liest das Discovery-Dokument und die
 Signaturschlüssel — ein Fehler zeigt sich, bevor sich jemand anmeldet.
@@ -54,7 +55,7 @@ Anbieter.
    flow* an, *Direct access grants* aus.
 2. **Valid redirect URIs**: der Callback des Panels,
    `https://your-app/admin/sso/callback`; **Valid post logout redirect URIs**:
-   das Panel, `https://your-app/admin`.
+   die Anmeldeseite des Panels, `https://your-app/admin/login`.
 3. **Advanced → Proof Key for Code Exchange**: `S256`.
 4. **Credentials**: das Client-Secret ins Anbieterformular kopieren.
 5. **Rollen im ID-Token.** Keycloak legt Realm-Rollen nur in das

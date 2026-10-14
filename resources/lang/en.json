@@ -36,5 +36,7 @@
     "Учётная запись отключена.": "The account is disabled.",
     "Учётная запись с таким email уже есть, но связать её со входом через SSO нельзя. Обратитесь к администратору.": "An account with this email already exists, but it cannot be linked to the SSO sign-in. Ask your administrator.",
     "причина не указана": "no reason given",
-    "у провайдера нет ключей подписи": "the provider has no signing keys"
+    "у провайдера нет ключей подписи": "the provider has no signing keys",
+    "Выходить и у провайдера": "Sign out at the provider too",
+    "Выход из панели завершает и сессию у провайдера, если он её поддерживает. Адрес возврата для настроек клиента в провайдере (Valid post logout redirect URIs): :uris": "Signing out of the panel ends the session at the provider too, if it supports that. The return address for the client's settings at the provider (Valid post logout redirect URIs): :uris"
 }

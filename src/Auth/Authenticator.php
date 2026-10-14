@@ -12,6 +12,7 @@ use Dskripchenko\LaravelAdmin\Support\TableColumns;
 use Dskripchenko\LaravelAdminOidc\Contracts\RoleCatalog;
 use Dskripchenko\LaravelAdminOidc\Contracts\UserProvisioner;
 use Dskripchenko\LaravelAdminOidc\Events\OidcSignedIn;
+use Dskripchenko\LaravelAdminOidc\Flow\SignOut;
 use Dskripchenko\LaravelAdminOidc\Models\OidcIdentity;
 use Dskripchenko\LaravelAdminOidc\Models\OidcProvider;
 use Dskripchenko\LaravelAdminOidc\Protocol\Claims;
@@ -78,8 +79,8 @@ final class Authenticator
             $user->forceFill(['last_login_at' => now(), 'last_login_ip' => $request->ip()])->save();
         }
         $request->session()->regenerate();
-        // For a sign-out at the provider later (RP-initiated logout).
-        $request->session()->put('admin-oidc.session', ['provider' => $provider->id, 'id_token' => $idToken]);
+        // For the sign-out at the provider (Flow\SignOut).
+        $request->session()->put(SignOut::SESSION, ['provider' => $provider->id, 'id_token' => $idToken]);
 
         $slugs = $roles->pluck('slug')->all();
         $this->audit($user, 'oidc.sign_in', ['provider' => $provider->id, 'how' => $how, 'roles' => $slugs]);

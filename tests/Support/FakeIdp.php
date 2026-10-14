@@ -30,6 +30,9 @@ final class FakeIdp
 
     public string $kid = 'key-1';
 
+    /** Whether discovery announces an end_session_endpoint (RP-initiated logout). */
+    public bool $announcesSignOut = true;
+
     public ?string $lastNonce = null;
 
     /** @var list<array<string, mixed>> */
@@ -65,7 +68,7 @@ final class FakeIdp
                 'token_endpoint' => self::ISSUER.'/protocol/openid-connect/token',
                 'jwks_uri' => self::ISSUER.'/protocol/openid-connect/certs',
                 'userinfo_endpoint' => self::ISSUER.'/protocol/openid-connect/userinfo',
-                'end_session_endpoint' => self::ISSUER.'/protocol/openid-connect/logout',
+                'end_session_endpoint' => $this->announcesSignOut ? self::ISSUER.'/protocol/openid-connect/logout' : null,
                 'token_endpoint_auth_methods_supported' => ['client_secret_basic', 'client_secret_post'],
             ]),
             'idp.test/realms/company/protocol/openid-connect/certs' => fn () => Http::response(['keys' => [$this->jwk()]]),

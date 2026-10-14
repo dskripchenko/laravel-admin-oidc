@@ -36,6 +36,7 @@ php artisan migrate
 | 角色映射 | 声明值 → 面板角色。登录至少需要一个匹配。 |
 | 要求 MFA | 当 `amr` 声明中没有第二因素时拒绝。 |
 | 按邮箱关联 | 首次登录可以接管使用相同且经提供方确认的邮箱的账户。 |
+| 同时在提供方处退出 | 当提供方声明了 `end_session_endpoint` 时，退出面板也会结束提供方处的会话（RP-initiated logout）。默认开启。 |
 
 在提供方所在行点击 **检查**：会读取 discovery 文档和签名密钥，在任何人尝试登录前发现配置错误。
 
@@ -44,7 +45,7 @@ php artisan migrate
 ## 3. Keycloak 分步配置
 
 1. **Clients → Create client**：类型 *OpenID Connect*，客户端 ID（`panel`），开启 *Client authentication*（机密客户端），开启 *Standard flow*，关闭 *Direct access grants*。
-2. **Valid redirect URIs**：面板的回调地址 `https://your-app/admin/sso/callback`；**Valid post logout redirect URIs**：面板地址 `https://your-app/admin`。
+2. **Valid redirect URIs**：面板的回调地址 `https://your-app/admin/sso/callback`；**Valid post logout redirect URIs**：面板登录页 `https://your-app/admin/login`。
 3. **Advanced → Proof Key for Code Exchange**：`S256`。
 4. **Credentials**：将客户端密钥复制到提供方表单。
 5. **ID 令牌中的角色。** Keycloak 默认只把 realm 角色放进访问令牌。可以把 *角色来源* 设为 *userinfo*，或者添加映射器：**Client scopes → `<client>-dedicated` → Add mapper → By configuration → User Realm Role**，声明名 `realm_access.roles`，开启 *Add to ID token*。客户端角色请使用 *User Client Role* 和路径 `resource_access.<client>.roles`。

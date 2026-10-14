@@ -16,6 +16,7 @@ use Dskripchenko\LaravelAdmin\Resource\Resource;
 use Dskripchenko\LaravelAdmin\Table\TableColumn;
 use Dskripchenko\LaravelAdminOidc\Contracts\RoleCatalog;
 use Dskripchenko\LaravelAdminOidc\Flow\SignInFlow;
+use Dskripchenko\LaravelAdminOidc\Http\Controllers\SsoController;
 use Dskripchenko\LaravelAdminOidc\Models\OidcProvider;
 use Dskripchenko\LaravelAdminOidc\Protocol\Discovery;
 use Dskripchenko\LaravelAdminOidc\Protocol\Jwks;
@@ -97,12 +98,15 @@ class OidcProviderResource extends Resource
                     Select::make('role')->title(__('Роль в панели'))->span(6)->options($this->roleOptions())->rules(['required', 'string']),
                 ])
                 ->help(__('Вход разрешён, только если хотя бы одно значение нашлось здесь; роли учётки заменяются по маппингу при каждом входе')),
-            Switcher::make('require_mfa')->title(__('Требовать MFA'))->span(4)
+            Switcher::make('require_mfa')->title(__('Требовать MFA'))->span(3)
                 ->help(__('Отказ, если провайдер не подтвердил второй фактор (claim amr; в Keycloak — маппер «Authentication Method Reference»)')),
-            Switcher::make('link_by_email')->title(__('Связывать по email'))->span(4)
+            Switcher::make('link_by_email')->title(__('Связывать по email'))->span(3)
                 ->default(true)
                 ->help(__('Первый вход занимает учётку с тем же email, только если провайдер подтвердил email')),
-            Switcher::make('enabled')->title(__('Включён'))->span(4)->default(true),
+            Switcher::make('sign_out_at_provider')->title(__('Выходить и у провайдера'))->span(3)
+                ->default(true)
+                ->help(__('Выход из панели завершает и сессию у провайдера, если он её поддерживает. Адрес возврата для настроек клиента в провайдере (Valid post logout redirect URIs): :uris', ['uris' => $this->postLogoutUris()])),
+            Switcher::make('enabled')->title(__('Включён'))->span(3)->default(true),
         ];
     }
 
@@ -204,6 +208,19 @@ class OidcProviderResource extends Resource
             $panel = Panels::registry()->get($id);
             if ($panel !== null) {
                 $uris[] = SignInFlow::redirectUri($panel);
+            }
+        }
+
+        return implode(', ', $uris);
+    }
+
+    private function postLogoutUris(): string
+    {
+        $uris = [];
+        foreach (array_keys($this->panelOptions()) as $id) {
+            $panel = Panels::registry()->get($id);
+            if ($panel !== null) {
+                $uris[] = SsoController::loginUrl($panel);
             }
         }
 

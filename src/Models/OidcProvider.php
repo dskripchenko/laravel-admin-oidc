@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property list<mixed>|null $role_mapping
  * @property bool $require_mfa
  * @property bool $link_by_email
+ * @property bool $sign_out_at_provider
  * @property bool $enabled
  */
 class OidcProvider extends Model
@@ -38,7 +39,7 @@ class OidcProvider extends Model
 
     protected $fillable = [
         'panel', 'owner_type', 'owner_id', 'name', 'issuer', 'client_id', 'client_secret', 'scopes',
-        'roles_claim', 'roles_source', 'role_mapping', 'require_mfa', 'link_by_email', 'enabled',
+        'roles_claim', 'roles_source', 'role_mapping', 'require_mfa', 'link_by_email', 'sign_out_at_provider', 'enabled',
     ];
 
     /** The secret never leaves the model in an array or JSON. */
@@ -51,6 +52,7 @@ class OidcProvider extends Model
             'role_mapping' => 'array',
             'require_mfa' => 'boolean',
             'link_by_email' => 'boolean',
+            'sign_out_at_provider' => 'boolean',
             'enabled' => 'boolean',
         ];
     }
