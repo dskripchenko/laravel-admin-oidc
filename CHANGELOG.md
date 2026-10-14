@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.0] — 2026-10-14
 
 ### Added
 
@@ -29,3 +29,5 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   every resolved address checked, private ranges refused unless whitelisted,
   no redirects, a timeout and a size cap.
 - Tests against a fake provider and, in CI, against Keycloak 26.
+
+[0.1.0]: https://github.com/dskripchenko/laravel-admin-oidc/releases/tag/v0.1.0
