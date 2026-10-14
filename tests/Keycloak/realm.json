@@ -1,0 +1,60 @@
+{
+  "realm": "panel-test",
+  "enabled": true,
+  "sslRequired": "none",
+  "roles": {
+    "realm": [
+      { "name": "panel-admins" },
+      { "name": "panel-viewers" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "panel-client",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "panel-client-ci-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost/admin/sso/callback"],
+      "attributes": { "pkce.code.challenge.method": "S256" },
+      "protocolMappers": [
+        {
+          "name": "realm roles in the ID token",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "alice",
+      "email": "alice@panel.test",
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "Admin",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "alice-ci-password", "temporary": false }],
+      "realmRoles": ["panel-admins"]
+    },
+    {
+      "username": "bob",
+      "email": "bob@panel.test",
+      "emailVerified": true,
+      "firstName": "Bob",
+      "lastName": "Nobody",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "bob-ci-password", "temporary": false }]
+    }
+  ]
+}
