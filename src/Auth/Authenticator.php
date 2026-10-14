@@ -56,7 +56,11 @@ final class Authenticator
         }
 
         $panel = Panels::registry()->get($provider->panel) ?? throw new SignInRefused('panel-forbidden', "Unknown panel {$provider->panel}");
-        Panels::registry()->setCurrent($panel->id);
+        // For the core's checks below: the request's own panel, never the
+        // registry's setCurrent() — the registry is a singleton, and under
+        // Octane a pinned panel outlives the request and serves the worker's
+        // next requests, whatever panel they belong to.
+        $request->attributes->set('admin.panel', $panel->id);
 
         [$user, $how] = DB::transaction(fn (): array => $this->account($provider, $claims));
 

@@ -6,11 +6,13 @@ namespace Dskripchenko\LaravelAdminOidc\Tests\Feature;
 
 use Dskripchenko\LaravelAdmin\Auth\LoginNotice;
 use Dskripchenko\LaravelAdmin\Models\AdminUser;
+use Dskripchenko\LaravelAdmin\Panel\Panels;
 use Dskripchenko\LaravelAdmin\Permission\Models\Role;
 use Dskripchenko\LaravelAdminOidc\Models\OidcIdentity;
 use Dskripchenko\LaravelAdminOidc\Models\OidcProvider;
 use Dskripchenko\LaravelAdminOidc\Tests\Support\FakeIdp;
 use Dskripchenko\LaravelAdminOidc\Tests\TestCase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
@@ -259,5 +261,21 @@ final class SignInTest extends TestCase
 
         $this->get('/admin/sso/redirect/'.$this->provider->id)->assertRedirect(url('admin/login'));
         $this->assertStringContainsString('unreachable', (string) $this->notice());
+    }
+
+    #[Test]
+    public function a_sign_in_leaves_the_next_requests_their_own_panel(): void
+    {
+        // The application outlives the request here as it does under Octane:
+        // a panel pinned in the registry would serve the next request too.
+        config()->set('admin.panels.team', ['path' => 'team']);
+        Panels::registry()->flush();
+
+        $this->signIn()->assertRedirect(url('admin'));
+
+        $next = Request::create('/team/login');
+        $next->attributes->set('admin.panel', 'team');
+        $this->app->instance('request', $next);
+        $this->assertSame('team', Panels::current()->id);
     }
 }

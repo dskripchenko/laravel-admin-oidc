@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Fixed
+
+- Under Octane, an SSO sign-in pinned its panel in the core's panel
+  registry, a singleton that outlives the request: the worker then served
+  every later request as that panel — the login page of another panel came
+  up as the signed-in one, with its buttons and API. The panel is now kept on
+  the request (`admin.panel` attribute) and goes with it.
+
 ## [0.1.1] — 2026-10-14
 
 ### Security
