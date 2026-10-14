@@ -39,6 +39,7 @@ In **System → SSO providers → Create**:
 | Role mapping | Claim value → panel role. Sign-in needs at least one match. |
 | Require MFA | Refuse when the `amr` claim names no second factor. |
 | Link by email | A first sign-in may take over an account with the same, provider-verified email. |
+| Sign out at the provider too | Signing out of the panel ends the provider's session as well (RP-initiated logout), when the provider announces an `end_session_endpoint`. On by default. |
 
 Press **Check** on the row: the discovery document and the signing keys are
 read, and a mistake shows up before anyone tries to sign in.
@@ -53,7 +54,7 @@ The form's help under *Issuer* lists the **redirect URIs** of the panels —
    flow* on, *Direct access grants* off.
 2. **Valid redirect URIs**: the panel's callback,
    `https://your-app/admin/sso/callback`. **Valid post logout redirect
-   URIs**: the panel, `https://your-app/admin`.
+   URIs**: the panel's login page, `https://your-app/admin/login`.
 3. **Advanced → Proof Key for Code Exchange**: `S256`.
 4. **Credentials**: copy the client secret into the provider form.
 5. **Roles in the ID token.** Keycloak puts realm roles into the access

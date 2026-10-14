@@ -8,12 +8,14 @@ use Composer\InstalledVersions;
 use Dskripchenko\LaravelAdmin\Admin;
 use Dskripchenko\LaravelAdmin\Auth\ExternalLogin;
 use Dskripchenko\LaravelAdmin\Auth\ExternalLoginRegistry;
+use Dskripchenko\LaravelAdmin\Auth\LogoutRedirectRegistry;
 use Dskripchenko\LaravelAdmin\Panel\Panel;
 use Dskripchenko\LaravelAdmin\Panel\Panels;
 use Dskripchenko\LaravelAdmin\Permission\ItemPermission;
 use Dskripchenko\LaravelAdmin\Plugin\AdminPlugin;
 use Dskripchenko\LaravelAdminOidc\Contracts\ProviderResolver;
 use Dskripchenko\LaravelAdminOidc\Flow\SignInFlow;
+use Dskripchenko\LaravelAdminOidc\Flow\SignOut;
 use Dskripchenko\LaravelAdminOidc\Http\Controllers\SsoController;
 use Dskripchenko\LaravelAdminOidc\Models\OidcProvider;
 use Dskripchenko\LaravelAdminOidc\Resources\OidcProviderResource;
@@ -48,6 +50,7 @@ final class AdminOidcPlugin implements AdminPlugin
             foreach ($this->panels() as $panel) {
                 $this->registerRoutes($panel);
                 $this->registerLoginButtons($panel);
+                $this->registerSignOut($panel);
             }
         }
 
@@ -102,5 +105,10 @@ final class AdminOidcPlugin implements AdminPlugin
                 app(ProviderResolver::class)->offered($request, $panel->id, $hint),
             );
         });
+    }
+
+    private function registerSignOut(Panel $panel): void
+    {
+        app(LogoutRedirectRegistry::class)->add($panel->id, static fn (Request $request): ?string => app(SignOut::class)->redirectFor($request, $panel));
     }
 }

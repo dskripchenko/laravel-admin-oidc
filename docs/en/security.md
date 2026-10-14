@@ -35,8 +35,12 @@ and link-local ranges refused unless in `allowed_cidrs`, no redirects
 followed, a timeout and a response size cap.
 
 **Secrets.** The client secret is stored with Laravel's encrypter and never
-serialized; the ID token is kept in the session for a later sign-out at the
+serialized; the ID token is kept in the session for the sign-out at the
 provider.
 
-**Not in 0.1.** Signing out at the provider (RP-initiated logout) and
-back-channel logout.
+**Signing out.** Leaving the panel after an SSO sign-in sends the browser to
+the provider's `end_session_endpoint` with the ID token as `id_token_hint`
+and the panel's login page as `post_logout_redirect_uri`, so the next "Sign
+in with …" asks who it is again. Off per provider with *Sign out at the
+provider too*. Back-channel logout is not supported: a session ended at the
+provider lives on in the panel until the panel's own sign-out or expiry.

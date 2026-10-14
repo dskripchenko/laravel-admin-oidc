@@ -38,6 +38,7 @@ php artisan migrate
 | Маппинг ролей | Значение в токене → роль панели. Для входа нужно хотя бы одно совпадение. |
 | Требовать MFA | Отказ, если в claim `amr` нет второго фактора. |
 | Связывать по email | Первый вход может занять учётку с тем же email, подтверждённым провайдером. |
+| Выходить и у провайдера | Выход из панели завершает и сессию у провайдера (RP-initiated logout), если провайдер объявил `end_session_endpoint`. Включено по умолчанию. |
 
 Кнопка **Проверить** в строке провайдера читает discovery и ключи подписи —
 ошибка настройки видна до того, как кто-то попробует войти.
@@ -52,7 +53,7 @@ php artisan migrate
    вкл., *Direct access grants* — выкл.
 2. **Valid redirect URIs** — callback панели,
    `https://your-app/admin/sso/callback`; **Valid post logout redirect URIs** —
-   адрес панели, `https://your-app/admin`.
+   экран входа панели, `https://your-app/admin/login`.
 3. **Advanced → Proof Key for Code Exchange** — `S256`.
 4. **Credentials** — скопируйте client secret в форму провайдера.
 5. **Роли в ID-токене.** Keycloak кладёт роли realm только в access-токен.

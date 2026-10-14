@@ -36,8 +36,13 @@ Loopback- und Link-local-Bereiche verboten, außer in `allowed_cidrs`, keine
 Weiterleitungen, ein Timeout und eine Größenbegrenzung der Antwort.
 
 **Geheimnisse.** Das Client-Secret wird mit Laravels Encrypter gespeichert und
-nie serialisiert; das ID-Token liegt für eine spätere Abmeldung beim Anbieter
-in der Session.
+nie serialisiert; das ID-Token liegt für die Abmeldung beim Anbieter in der
+Session.
 
-**Nicht in 0.1.** Abmeldung beim Anbieter (RP-initiated Logout) und
-Back-Channel-Logout.
+**Abmeldung.** Wer das Panel nach einer SSO-Anmeldung verlässt, wird zum
+`end_session_endpoint` des Anbieters geschickt, mit dem ID-Token als
+`id_token_hint` und der Anmeldeseite des Panels als
+`post_logout_redirect_uri` — das nächste „Anmelden mit …“ fragt wieder, wer es
+ist. Pro Anbieter abschaltbar mit *Auch beim Anbieter abmelden*.
+Back-Channel-Logout wird nicht unterstützt: Eine beim Anbieter beendete
+Sitzung lebt im Panel bis zur Abmeldung dort oder bis zu ihrem Ablauf.

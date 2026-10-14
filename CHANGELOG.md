@@ -5,6 +5,28 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- **Signing out at the provider (RP-initiated logout).** Leaving the panel
+  after an SSO sign-in sends the browser to the provider's
+  `end_session_endpoint` with the ID token as `id_token_hint` and the panel's
+  login page as `post_logout_redirect_uri`, so the provider's session ends
+  too and the next "Sign in with …" asks again. A new provider switch, *Sign
+  out at the provider too* (on by default, column `sign_out_at_provider` —
+  run the migrations); its hint shows the address for the provider's *Valid
+  post logout redirect URIs*. Built on the core's `Admin::logoutRedirect()`,
+  hence laravel-admin 1.51.
+- The Keycloak job of the CI checks the sign-out end to end: Keycloak accepts
+  it, returns to the login page and asks for the password again.
+
+### Changed
+
+- Requires `dskripchenko/laravel-admin` ^1.51.
+- The getting-started guide names the panel's login page
+  (`/admin/login`) as the post logout redirect URI, not the panel's root.
+
 ## [0.1.2] — 2026-10-14
 
 ### Fixed
