@@ -72,7 +72,7 @@ final class Authenticator
             throw new SignInRefused('panel-forbidden', 'The panel refuses the account');
         }
 
-        $this->syncRoles($user, $roles);
+        $this->syncRoles($user, $roles, $provider);
 
         Auth::guard($panel->guard)->login($user);
         if (TableColumns::has($user, 'last_login_at')) {
@@ -84,7 +84,7 @@ final class Authenticator
 
         $slugs = $roles->pluck('slug')->all();
         $this->audit($user, 'oidc.sign_in', ['provider' => $provider->id, 'how' => $how, 'roles' => $slugs]);
-        event(new OidcSignedIn($user, $provider, $how, $slugs));
+        event(new OidcSignedIn($user, $provider, $how, $slugs, $claims));
 
         return [$user, $how];
     }
@@ -146,16 +146,30 @@ final class Authenticator
 
     /**
      * The roles come from the provider: what the mapping gave replaces what
-     * the account had.
+     * the account had. With `preserve_unmapped_roles` only the roles the
+     * provider's mapping can hand out are replaced; roles an administrator
+     * gave by hand, outside the mapping, stay.
      *
      * @param  \Illuminate\Support\Collection<int, \Dskripchenko\LaravelAdmin\Permission\Models\Role>  $roles
      */
-    private function syncRoles(Model $user, \Illuminate\Support\Collection $roles): void
+    private function syncRoles(Model $user, \Illuminate\Support\Collection $roles, OidcProvider $provider): void
     {
         if (! method_exists($user, 'roles')) {
             return;
         }
-        $user->roles()->sync($roles->pluck('id')->all());
+
+        $ids = $roles->pluck('id')->all();
+
+        if (config('admin-oidc.preserve_unmapped_roles', false)) {
+            $mappable = $this->catalog->roles($provider)
+                ->filter(static fn ($role): bool => in_array($role->slug, $provider->mappedRoles(), true))
+                ->pluck('id')->all();
+            $kept = $user->roles()->pluck($user->roles()->getRelated()->getQualifiedKeyName())
+                ->reject(static fn ($id): bool => in_array($id, $mappable, true))->all();
+            $ids = array_values(array_unique([...$ids, ...$kept]));
+        }
+
+        $user->roles()->sync($ids);
         $user->unsetRelation('roles');
     }
 

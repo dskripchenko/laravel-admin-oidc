@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased] — 0.3.0
+
+### Added
+- **`OidcSignedIn` carries the claims** of the sign-in (`$event->claims`), so a
+  host can keep a profile in step with the provider — name, groups,
+  department — at every sign-in. The new constructor argument is optional and
+  last; existing listeners keep working.
+- **`preserve_unmapped_roles`** (env `ADMIN_OIDC_PRESERVE_UNMAPPED_ROLES`, off
+  by default): only the roles the provider's mapping can hand out are
+  replaced at sign-in; roles an administrator gave by hand stay.
+- `OidcProvider::mappedRoles()` — every role slug the mapping can hand out.
+
 ## [0.2.0] — 2026-10-15
 
 ### Added
