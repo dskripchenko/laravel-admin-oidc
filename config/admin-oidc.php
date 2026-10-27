@@ -22,6 +22,13 @@ return [
     'role_catalog' => Dskripchenko\LaravelAdminOidc\Defaults\DefaultRoleCatalog::class,
 
     /*
+    | The roles of an account are replaced at every sign-in by what the mapping
+    | gives. With this on, only the roles the provider's mapping can hand out
+    | are replaced, and roles given by hand outside the mapping stay.
+    */
+    'preserve_unmapped_roles' => (bool) env('ADMIN_OIDC_PRESERVE_UNMAPPED_ROLES', false),
+
+    /*
     | Allowed clock skew when checking exp / iat / nbf, seconds.
     */
     'leeway' => 60,

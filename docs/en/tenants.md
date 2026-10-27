@@ -48,5 +48,7 @@ panel's.
 ## Events
 
 - `OidcSignedIn` — the user, the provider, how the account was found
-  (`existing`, `linked`, `created`) and the roles the mapping gave.
+  (`existing`, `linked`, `created`), the roles the mapping gave and the
+  verified claims of the sign-in (`$event->claims`) — to keep a profile in
+  step with the provider: name, groups, department.
 - `OidcSignInRefused` — the provider (when known), the reason key, the detail.

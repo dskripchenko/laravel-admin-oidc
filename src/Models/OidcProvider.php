@@ -87,6 +87,23 @@ class OidcProvider extends Model
     }
 
     /**
+     * Every role slug the mapping can hand out.
+     *
+     * @return list<string>
+     */
+    public function mappedRoles(): array
+    {
+        $roles = [];
+        foreach ((array) $this->role_mapping as $row) {
+            if (is_array($row) && (string) ($row['role'] ?? '') !== '') {
+                $roles[] = (string) $row['role'];
+            }
+        }
+
+        return array_values(array_unique($roles));
+    }
+
+    /**
      * The roles of the panel the claim values map to.
      *
      * @param  list<string>  $values

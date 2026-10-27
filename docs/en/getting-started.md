@@ -77,6 +77,10 @@ role taken away at the provider is taken away here on the next sign-in.
 When nothing matches, the person is turned away with "no access: ask your
 administrator", and no account is created.
 
+Roles given by hand alongside the provider's: set
+`preserve_unmapped_roles` (env `ADMIN_OIDC_PRESERVE_UNMAPPED_ROLES=true`).
+Then only the roles the mapping can hand out are replaced; the rest stay.
+
 ## 5. Network
 
 Requests to the provider go through an address policy:

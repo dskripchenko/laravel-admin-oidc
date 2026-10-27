@@ -44,3 +44,30 @@ and the panel's login page as `post_logout_redirect_uri`, so the next "Sign
 in with …" asks who it is again. Off per provider with *Sign out at the
 provider too*. Back-channel logout is not supported: a session ended at the
 provider lives on in the panel until the panel's own sign-out or expiry.
+
+
+## Access tokens for your own APIs
+
+A host may also be a resource server: an API or an MCP endpoint that takes
+the provider's JWT access tokens (RFC 9068). `AccessTokenVerifier` checks one
+the way `IdTokenVerifier` checks an ID token — signed by the provider's key
+with an asymmetric algorithm (no `none`, no HMAC), issued by the configured
+issuer, not expired, with a subject — and requires its `aud` to name your
+resource. An ID token offered as an access token (`typ: ID`) is refused.
+
+```php
+use Dskripchenko\LaravelAdminOidc\Models\OidcProvider;
+use Dskripchenko\LaravelAdminOidc\Protocol\AccessTokenVerifier;
+use Dskripchenko\LaravelAdminOidc\Protocol\Discovery;
+
+$claims = app(AccessTokenVerifier::class)->verify(
+    $request->bearerToken(),
+    $provider,                                   // an enabled OidcProvider
+    app(Discovery::class)->for($provider),
+    ['https://app.example.com/api/mcp'],         // what this resource answers to
+);
+$scopes = AccessTokenVerifier::scopes($claims); // from `scope` or `scp`
+```
+
+Map the subject to your user through `OidcIdentity` (provider and subject),
+not by e-mail. Errors are `OidcException` with the reason in the message.

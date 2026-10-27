@@ -110,6 +110,38 @@ final class SignInTest extends TestCase
     }
 
     #[Test]
+    public function roles_given_by_hand_outside_the_mapping_can_be_kept(): void
+    {
+        config(['admin-oidc.preserve_unmapped_roles' => true]);
+        $auditor = Role::create(['name' => 'Auditor', 'slug' => 'auditor', 'permissions' => []]);
+
+        $this->signIn();
+        Auth::guard('admin')->logout();
+        $user = AdminUser::query()->where('email', 'alice@company.test')->firstOrFail();
+        $user->roles()->attach($auditor->id);
+
+        $this->idp->claims['realm_access']['roles'] = ['panel-viewers'];
+        $this->signIn()->assertRedirect(url('admin'));
+
+        $this->assertEqualsCanonicalizing(['viewer', 'auditor'], $user->roles()->pluck('slug')->all());
+    }
+
+    #[Test]
+    public function the_signed_in_event_carries_the_claims(): void
+    {
+        $seen = null;
+        \Illuminate\Support\Facades\Event::listen(\Dskripchenko\LaravelAdminOidc\Events\OidcSignedIn::class, function ($event) use (&$seen): void {
+            $seen = $event->claims;
+        });
+
+        $this->signIn();
+
+        $this->assertNotNull($seen);
+        $this->assertSame('alice-sub', $seen->subject());
+        $this->assertSame(['panel-admins', 'offline_access'], $seen->valuesAt('realm_access.roles'));
+    }
+
+    #[Test]
     public function no_mapped_role_no_way_in_and_no_account(): void
     {
         $this->idp->claims['realm_access']['roles'] = ['offline_access'];
