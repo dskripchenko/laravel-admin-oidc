@@ -17,6 +17,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   by default): only the roles the provider's mapping can hand out are
   replaced at sign-in; roles an administrator gave by hand stay.
 - `OidcProvider::mappedRoles()` — every role slug the mapping can hand out.
+- **`Protocol\AccessTokenVerifier`** for the host's own resource servers (an
+  API, an MCP endpoint) that take JWT access tokens of the provider
+  (RFC 9068): signature by the provider's JWKS with the same algorithms as ID
+  tokens (no `none`, no HMAC), issuer, expiry, an `aud` naming the resource,
+  a subject; an ID token used as an access token is refused.
+  `AccessTokenVerifier::scopes()` reads `scope` or `scp`.
 
 ## [0.2.0] — 2026-10-15
 

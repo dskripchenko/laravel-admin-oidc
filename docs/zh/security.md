@@ -21,3 +21,24 @@
 **密钥。** 客户端密钥使用 Laravel 的加密器存储，永不序列化；ID 令牌保存在会话中，供在提供方处退出时使用。
 
 **退出。** 通过 SSO 登录后退出面板时，浏览器会被送往提供方的 `end_session_endpoint`，`id_token_hint` 为 ID 令牌，`post_logout_redirect_uri` 为面板登录页——下一次“通过 … 登录”时会重新确认身份。可在提供方设置中通过 *同时在提供方处退出* 关闭。不支持 back-channel logout：在提供方处结束的会话会在面板中保留，直到在面板中退出或会话过期。
+
+
+## 用于自有 API 的访问令牌
+
+宿主应用也可以是资源服务器：接收提供方 JWT 访问令牌（RFC 9068）的 API 或 MCP 端点。`AccessTokenVerifier` 以 `IdTokenVerifier` 校验 ID 令牌的方式校验访问令牌——由提供方密钥以非对称算法签名（不接受 `none` 和 HMAC）、由配置的签发方签发、未过期、带有主体——并要求 `aud` 指向你的资源。被当作访问令牌提交的 ID 令牌（`typ: ID`）会被拒绝。
+
+```php
+use Dskripchenko\LaravelAdminOidc\Models\OidcProvider;
+use Dskripchenko\LaravelAdminOidc\Protocol\AccessTokenVerifier;
+use Dskripchenko\LaravelAdminOidc\Protocol\Discovery;
+
+$claims = app(AccessTokenVerifier::class)->verify(
+    $request->bearerToken(),
+    $provider,                                   // an enabled OidcProvider
+    app(Discovery::class)->for($provider),
+    ['https://app.example.com/api/mcp'],         // what this resource answers to
+);
+$scopes = AccessTokenVerifier::scopes($claims); // from `scope` or `scp`
+```
+
+请通过 `OidcIdentity`（提供方与主体）把主体映射到用户，而不是通过电子邮件。错误为 `OidcException`，原因写在消息中。

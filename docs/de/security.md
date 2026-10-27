@@ -46,3 +46,32 @@ Session.
 ist. Pro Anbieter abschaltbar mit *Auch beim Anbieter abmelden*.
 Back-Channel-Logout wird nicht unterstützt: Eine beim Anbieter beendete
 Sitzung lebt im Panel bis zur Abmeldung dort oder bis zu ihrem Ablauf.
+
+
+## Access-Token für eigene APIs
+
+Ein Host kann auch Ressourcenserver sein: eine API oder ein MCP-Endpunkt, der
+JWT-Access-Token des Anbieters annimmt (RFC 9068). `AccessTokenVerifier`
+prüft sie wie `IdTokenVerifier` ein ID-Token — signiert mit dem Schlüssel des
+Anbieters und einem asymmetrischen Algorithmus (kein `none`, kein HMAC), vom
+konfigurierten Aussteller, nicht abgelaufen, mit Subjekt — und verlangt, dass
+`aud` Ihre Ressource nennt. Ein als Access-Token angebotenes ID-Token
+(`typ: ID`) wird abgelehnt.
+
+```php
+use Dskripchenko\LaravelAdminOidc\Models\OidcProvider;
+use Dskripchenko\LaravelAdminOidc\Protocol\AccessTokenVerifier;
+use Dskripchenko\LaravelAdminOidc\Protocol\Discovery;
+
+$claims = app(AccessTokenVerifier::class)->verify(
+    $request->bearerToken(),
+    $provider,                                   // an enabled OidcProvider
+    app(Discovery::class)->for($provider),
+    ['https://app.example.com/api/mcp'],         // what this resource answers to
+);
+$scopes = AccessTokenVerifier::scopes($claims); // from `scope` or `scp`
+```
+
+Ordnen Sie das Subjekt über `OidcIdentity` (Anbieter und Subjekt) Ihrem
+Benutzer zu, nicht über die E-Mail. Fehler sind `OidcException` mit dem Grund
+in der Meldung.

@@ -42,3 +42,30 @@ loopback и link-local диапазоны запрещены, если их не
 спросит, кто это. Отключается у провайдера флагом *Выходить и у провайдера*.
 Back-channel logout не поддерживается: сессия, завершённая у провайдера,
 живёт в панели до выхода из панели или своего истечения.
+
+
+## Access-токены для собственных API
+
+Хост может быть и сервером ресурсов: API или MCP-эндпоинтом, принимающим
+JWT access-токены провайдера (RFC 9068). `AccessTokenVerifier` проверяет их
+так же, как `IdTokenVerifier` — ID-токены: подпись ключом провайдера
+асимметричным алгоритмом (без `none` и HMAC), настроенный issuer, срок,
+наличие субъекта, — и требует, чтобы `aud` называл ваш ресурс. ID-токен,
+поданный вместо access-токена (`typ: ID`), отклоняется.
+
+```php
+use Dskripchenko\LaravelAdminOidc\Models\OidcProvider;
+use Dskripchenko\LaravelAdminOidc\Protocol\AccessTokenVerifier;
+use Dskripchenko\LaravelAdminOidc\Protocol\Discovery;
+
+$claims = app(AccessTokenVerifier::class)->verify(
+    $request->bearerToken(),
+    $provider,                                   // an enabled OidcProvider
+    app(Discovery::class)->for($provider),
+    ['https://app.example.com/api/mcp'],         // what this resource answers to
+);
+$scopes = AccessTokenVerifier::scopes($claims); // from `scope` or `scp`
+```
+
+Пользователя сопоставляйте по `OidcIdentity` (провайдер и субъект), а не по
+e-mail. Ошибки — `OidcException` с причиной в сообщении.
